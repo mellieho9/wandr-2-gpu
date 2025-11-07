@@ -1,0 +1,29 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: wandr-gpu
+spec:
+  template:
+    metadata:
+      annotations:
+        # GPU configuration
+        run.googleapis.com/gpu-type: nvidia-l4
+        run.googleapis.com/gpu-count: "1"
+        # Resource limits
+        autoscaling.knative.dev/maxScale: "3"
+        autoscaling.knative.dev/minScale: "0"
+    spec:
+      containerConcurrency: 1
+      timeoutSeconds: 600
+      containers:
+        - image: gcr.io/PROJECT_ID/wandr-gpu
+          resources:
+            limits:
+              memory: 16Gi
+              cpu: "4"
+              nvidia.com/gpu: "1"
+          env:
+            - name: WHISPER_MODEL
+              value: "base"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/secrets/gcp-key.json"

@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+
+# Environment
+.env
+
+# Temporary files
+/tmp/
+*.mp4
+*.wav
+
+# IDE
+.vscode/
+.idea/
+
+# Models (downloaded at runtime)
+models/

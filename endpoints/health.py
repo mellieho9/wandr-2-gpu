@@ -7,8 +7,10 @@ health_bp = Blueprint("health", __name__)
 def health_check():
     """Health check endpoint"""
     from services.processing_pipeline import ProcessingPipeline
+    from utils.job_store import JobStore
 
-    pipeline = ProcessingPipeline()
+    job_store = JobStore()
+    pipeline = ProcessingPipeline(job_store)
 
     return jsonify(
         {

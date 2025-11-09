@@ -1,7 +1,10 @@
 import os
+import logging
 import torch
 from faster_whisper import WhisperModel
 import ffmpeg
+
+logger = logging.getLogger(__name__)
 
 
 class WhisperGPU:
@@ -20,7 +23,7 @@ class WhisperGPU:
         device = "cuda" if torch.cuda.is_available() else "cpu"
         compute_type = "float16" if device == "cuda" else "int8"
 
-        print(f"Loading Whisper model '{model_size}' on {device}")
+        logger.info(f"Loading Whisper model '{model_size}' on {device}")
         self.model = WhisperModel(model_size, device=device, compute_type=compute_type)
 
     def transcribe(self, video_path: str) -> str:

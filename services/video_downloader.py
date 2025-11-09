@@ -8,8 +8,8 @@ from config.settings import settings
 class VideoDownloader:
     """Download videos from TikTok and Instagram"""
 
-    def __init__(self, output_dir: str = None):
-        self.output_dir = output_dir or settings.VIDEO_OUTPUT_DIR
+    def __init__(self):
+        self.output_dir = settings.VIDEO_OUTPUT_DIR
         os.makedirs(self.output_dir, exist_ok=True)
 
     def download(self, url: str, job_id: str) -> str:

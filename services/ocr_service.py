@@ -1,8 +1,11 @@
 import os
+import logging
 import cv2
 import torch
 from google.cloud import vision
 from typing import List
+
+logger = logging.getLogger(__name__)
 
 
 class OCRService:
@@ -67,5 +70,5 @@ class OCRService:
 
             return ""
         except Exception as e:
-            print(f"OCR error: {e}")
+            logger.error(f"OCR error: {e}")
             return ""

@@ -1,7 +1,10 @@
 import os
+import logging
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 
 class Settings:
@@ -34,12 +37,12 @@ class Settings:
 
         # Google credentials are optional - warn if missing
         if not cls.GOOGLE_APPLICATION_CREDENTIALS:
-            print(
-                "WARNING: GOOGLE_APPLICATION_CREDENTIALS not set - OCR will be disabled"
+            logger.warning(
+                "GOOGLE_APPLICATION_CREDENTIALS not set - OCR will be disabled"
             )
         elif not os.path.exists(cls.GOOGLE_APPLICATION_CREDENTIALS):
-            print(
-                f"WARNING: Credentials file not found: {cls.GOOGLE_APPLICATION_CREDENTIALS}"
+            logger.warning(
+                f"Credentials file not found: {cls.GOOGLE_APPLICATION_CREDENTIALS}"
             )
 
         if errors:

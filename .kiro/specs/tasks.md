@@ -4,7 +4,7 @@
 
 - [ ] 5. Implement video downloader service
 
-  - [ ] 5.1 Create video downloader with yt-dlp
+  - [x] 5.1 Create video downloader with yt-dlp
 
     - Implement `services/video_downloader.py` with `download()` method
     - Add platform detection for TikTok and Instagram URLs
@@ -20,7 +20,7 @@
 
 - [ ] 6. Implement Whisper transcription service
 
-  - [ ] 6.1 Create Whisper service for audio transcription
+  - [x] 6.1 Create Whisper service for audio transcription
 
     - Implement `services/whisper_service.py` with `transcribe()` method
     - Add `_extract_audio()` method using ffmpeg to extract audio as MP3
@@ -33,9 +33,9 @@
     - Update Link Database status to "processing" on success or "failed" on failure
     - _Requirements: 6.4, 6.5_
 
-- [ ] 7. Implement OCR service for text extraction
+- [x] 7. Implement OCR service for text extraction
 
-  - [ ] 7.1 Create OCR service with Google Vision API
+  - [x] 7.1 Create OCR service with Google Vision API
 
     - Implement `services/ocr_service.py` with `extract_text()` method
     - Add `_extract_frames()` method using opencv to extract frames every 2 seconds
@@ -44,7 +44,7 @@
     - Store OCR content in video_contents table
     - _Requirements: 7.1, 7.2, 7.3_
 
-  - [ ] 7.2 Add graceful error handling
+  - [x] 7.2 Add graceful error handling
     - Log OCR errors but continue processing with transcription only
     - Implement 120-second timeout for OCR processing
     - _Requirements: 7.4, 7.5_

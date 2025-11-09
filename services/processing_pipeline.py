@@ -40,7 +40,9 @@ class ProcessingPipeline:
             self.job_store.update_job(
                 job_id, {"status": "downloading", "progress": {"step": 1, "total": 3}}
             )
-            video_path = self.downloader.download(url, job_id)
+            download_result = self.downloader.download(url, job_id)
+            video_path = download_result["video_path"]
+            description = download_result["description"]
             logger.info(f"[{job_id}] Video downloaded: {video_path}")
 
             # Step 2: Transcribe
@@ -68,7 +70,11 @@ class ProcessingPipeline:
                 job_id,
                 {
                     "status": "completed",
-                    "result": {"transcription": transcription, "ocr_text": ocr_text},
+                    "result": {
+                        "transcription": transcription,
+                        "ocr_text": ocr_text,
+                        "description": description,
+                    },
                 },
             )
 

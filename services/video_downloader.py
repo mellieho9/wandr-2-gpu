@@ -12,7 +12,7 @@ class VideoDownloader:
         self.output_dir = settings.VIDEO_OUTPUT_DIR
         os.makedirs(self.output_dir, exist_ok=True)
 
-    def download(self, url: str, job_id: str) -> str:
+    def download(self, url: str, job_id: str) -> dict:
         """
         Download video and return local file path
 
@@ -34,9 +34,10 @@ class VideoDownloader:
 
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([url])
+                info = ydl.extract_info(url, download=True)
+                description = info.get("description", "")
 
-            return output_path
+            return {"video_path": output_path, "description": description}
         except Exception as e:
             raise Exception(f"Failed to download video: {str(e)}")
 

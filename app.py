@@ -1,11 +1,11 @@
-import os
 from flask import Flask
-from dotenv import load_dotenv
 
+from config.settings import settings
 from endpoints.health import health_bp
 from endpoints.processing import processing_bp
 
-load_dotenv()
+# Validate settings on startup
+settings.validate()
 
 app = Flask(__name__)
 
@@ -14,6 +14,5 @@ app.register_blueprint(health_bp)
 app.register_blueprint(processing_bp)
 
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8080))
-    app.run(host='0.0.0.0', port=port, debug=False)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=settings.PORT, debug=False)

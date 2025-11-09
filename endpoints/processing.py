@@ -4,18 +4,18 @@ from flask import Blueprint, request, jsonify
 from services.processing_pipeline import ProcessingPipeline
 from utils.job_store import JobStore
 
-processing_bp = Blueprint('processing', __name__)
+processing_bp = Blueprint("processing", __name__)
 
 # Initialize services
 job_store = JobStore()
 pipeline = ProcessingPipeline()
 
 
-@processing_bp.route('/process', methods=['POST'])
+@processing_bp.route("/process", methods=["POST"])
 def process_video():
     """
     Submit video processing job
-    
+
     Request body:
     {
         "url": "https://tiktok.com/...",
@@ -28,62 +28,62 @@ def process_video():
     }
     """
     data = request.json
-    
-    if not data or 'url' not in data:
-        return jsonify({'error': 'Missing video URL'}), 400
-    
+
+    if not data or "url" not in data:
+        return jsonify({"error": "Missing video URL"}), 400
+
     job_id = str(uuid.uuid4())
-    
+
     # Store job
-    job_store.create_job(job_id, {
-        'url': data['url'],
-        'schema': data.get('schema', {}),
-        'prompt': data.get('prompt', ''),
-        'status': 'queued'
-    })
-    
+    job_store.create_job(
+        job_id,
+        {
+            "url": data["url"],
+            "schema": data.get("schema", {}),
+            "prompt": data.get("prompt", ""),
+            "status": "queued",
+        },
+    )
+
     # Process asynchronously
-    pipeline.process_async(job_id, data['url'], data.get('schema', {}), data.get('prompt', ''))
-    
-    return jsonify({
-        'job_id': job_id,
-        'status': 'queued',
-        'message': 'Video processing started'
-    }), 202
+    pipeline.process_async(
+        job_id, data["url"], data.get("schema", {}), data.get("prompt", "")
+    )
+
+    return jsonify(
+        {"job_id": job_id, "status": "queued", "message": "Video processing started"}
+    ), 202
 
 
-@processing_bp.route('/status/<job_id>', methods=['GET'])
+@processing_bp.route("/status/<job_id>", methods=["GET"])
 def get_status(job_id):
     """Get job status"""
     job = job_store.get_job(job_id)
-    
+
     if not job:
-        return jsonify({'error': 'Job not found'}), 404
-    
-    return jsonify({
-        'job_id': job_id,
-        'status': job['status'],
-        'progress': job.get('progress', {}),
-        'error': job.get('error')
-    })
+        return jsonify({"error": "Job not found"}), 404
+
+    return jsonify(
+        {
+            "job_id": job_id,
+            "status": job["status"],
+            "progress": job.get("progress", {}),
+            "error": job.get("error"),
+        }
+    )
 
 
-@processing_bp.route('/result/<job_id>', methods=['GET'])
+@processing_bp.route("/result/<job_id>", methods=["GET"])
 def get_result(job_id):
     """Get processed result"""
     job = job_store.get_job(job_id)
-    
+
     if not job:
-        return jsonify({'error': 'Job not found'}), 404
-    
-    if job['status'] != 'completed':
-        return jsonify({
-            'error': 'Job not completed',
-            'status': job['status']
-        }), 400
-    
-    return jsonify({
-        'job_id': job_id,
-        'status': 'completed',
-        'result': job.get('result', {})
-    })
+        return jsonify({"error": "Job not found"}), 404
+
+    if job["status"] != "completed":
+        return jsonify({"error": "Job not completed", "status": job["status"]}), 400
+
+    return jsonify(
+        {"job_id": job_id, "status": "completed", "result": job.get("result", {})}
+    )

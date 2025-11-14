@@ -23,6 +23,9 @@ class Settings:
     # Google Cloud
     GOOGLE_APPLICATION_CREDENTIALS = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 
+    # Gemini AI
+    GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+
     # Redis
     REDIS_HOST = os.environ.get("REDIS_HOST")
     REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))

@@ -7,6 +7,7 @@ from config.settings import settings
 from services.video_downloader import VideoDownloader
 from services.whisper_gpu import WhisperGPU
 from services.ocr_service import OCRService
+from services.gemini_summarizer import GeminiSummarizer
 from utils.job_store import JobStore
 
 logger = logging.getLogger(__name__)
@@ -19,6 +20,7 @@ class ProcessingPipeline:
         self.downloader = VideoDownloader()
         self.whisper = WhisperGPU(model_size=settings.WHISPER_MODEL)
         self.ocr = OCRService()
+        self.summarizer = GeminiSummarizer()
         self.job_store = job_store
 
     def process_async(self, job_id: str, url: str, schema: Dict, prompt: str):
@@ -36,9 +38,9 @@ class ProcessingPipeline:
 
         try:
             # Step 1: Download
-            logger.info(f"[{job_id}] Step 1/3: Downloading video")
+            logger.info(f"[{job_id}] Step 1/4: Downloading video")
             self.job_store.update_job(
-                job_id, {"status": "downloading", "progress": {"step": 1, "total": 3}}
+                job_id, {"status": "downloading", "progress": {"step": 1, "total": 4}}
             )
             download_result = self.downloader.download(url, job_id)
             video_path = download_result["video_path"]
@@ -46,9 +48,9 @@ class ProcessingPipeline:
             logger.info(f"[{job_id}] Video downloaded: {video_path}")
 
             # Step 2: Transcribe
-            logger.info(f"[{job_id}] Step 2/3: Transcribing audio")
+            logger.info(f"[{job_id}] Step 2/4: Transcribing audio")
             self.job_store.update_job(
-                job_id, {"status": "transcribing", "progress": {"step": 2, "total": 3}}
+                job_id, {"status": "transcribing", "progress": {"step": 2, "total": 4}}
             )
             transcription = self.whisper.transcribe(video_path)
             logger.info(
@@ -56,13 +58,29 @@ class ProcessingPipeline:
             )
 
             # Step 3: OCR
-            logger.info(f"[{job_id}] Step 3/3: Extracting text from frames")
+            logger.info(f"[{job_id}] Step 3/4: Extracting text from frames")
             self.job_store.update_job(
                 job_id,
-                {"status": "extracting_text", "progress": {"step": 3, "total": 3}},
+                {"status": "extracting_text", "progress": {"step": 3, "total": 4}},
             )
             ocr_text = self.ocr.extract_text(video_path)
             logger.info(f"[{job_id}] OCR completed: {len(ocr_text)} characters")
+
+            # Step 4: Summarize with Gemini
+            logger.info(f"[{job_id}] Step 4/4: Generating AI summary")
+            self.job_store.update_job(
+                job_id,
+                {"status": "summarizing", "progress": {"step": 4, "total": 4}},
+            )
+            structured_data = self.summarizer.summarize(
+                transcription=transcription,
+                ocr_text=ocr_text,
+                schema=schema,
+                user_prompt=prompt,
+            )
+            logger.info(
+                f"[{job_id}] Summarization completed with {len(structured_data)} fields"
+            )
 
             # Complete
             logger.info(f"[{job_id}] Processing completed successfully")
@@ -74,6 +92,7 @@ class ProcessingPipeline:
                         "transcription": transcription,
                         "ocr_text": ocr_text,
                         "description": description,
+                        "structured_data": structured_data,
                     },
                 },
             )

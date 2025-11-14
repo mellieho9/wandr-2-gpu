@@ -49,20 +49,20 @@
     - Implement 120-second timeout for OCR processing
     - _Requirements: 7.4, 7.5_
 
-- [ ] 8. Implement Gemini summarization service
+- [x] 8. Implement Gemini summarization service
 
-  - [ ] 8.1 Create Gemini summarizer for schema-specific summaries
+  - [x] 8.1 Create Gemini summarizer for schema-specific summaries
 
-    - Implement `services/gemini_summarizer.py` with `summarize()` method
+    - Implement `services/gemini_summarizer.py` with `summarize()` method using Google ADK
     - Add `_build_prompt()` method to construct prompt with schema, transcription, OCR text, and user prompt
-    - Call Gemini 1.5 Pro API requesting JSON output format
+    - Use Google Agent Development Kit (ADK) with Gemini 2.0 Flash model
     - Implement `_parse_response()` to parse API response into structured data matching Notion schema
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
 
-  - [ ] 8.2 Add validation and error handling
+  - [x] 8.2 Add validation and error handling
     - Validate parsed response against Notion schema structure
-    - Handle API rate limits with exponential backoff
-    - Update Link Database status to "saving" on success or "failed" on failure
+    - ADK handles retry logic internally
+    - Integrated into processing pipeline with status updates
     - _Requirements: 8.5, 8.6_
 
 - [ ] 9. Implement Notion content writer
@@ -80,20 +80,20 @@
     - Update status to "failed" with error message on failure
     - _Requirements: 9.5, 9.6_
 
-- [ ] 10. Implement processing pipeline orchestrator
+- [x] 10. Implement processing pipeline orchestrator
 
-  - [ ] 10.1 Create pipeline orchestrator
+  - [x] 10.1 Create pipeline orchestrator
 
-    - Implement `services/processing_pipeline.py` with `process_entry()` method
-    - Orchestrate sequential execution: download → transcribe → OCR → summarize → save
-    - Inject all service dependencies (downloader, whisper, ocr, summarizer, notion_client)
-    - Add `_update_status()` helper method to update Link Database at each stage
-    - _Requirements: 5.1, 6.5, 8.6, 9.5_
+    - Implement `services/processing_pipeline.py` with `_process()` method
+    - Orchestrate sequential execution: download → transcribe → OCR → summarize (4 steps)
+    - Inject all service dependencies (downloader, whisper, ocr, summarizer)
+    - Update job status at each stage: downloading → transcribing → extracting_text → summarizing
+    - _Requirements: 5.1, 6.5, 8.6_
 
-  - [ ] 10.2 Add cleanup and error handling
-    - Implement `_cleanup_temp_files()` method to delete video and audio files
-    - Call cleanup after successful completion or failure
-    - Handle exceptions at each pipeline stage and update status accordingly
+  - [x] 10.2 Add cleanup and error handling
+    - Video files cleaned up in finally block after processing
+    - Handle exceptions at each pipeline stage and update status to "failed"
+    - Result includes: transcription, ocr_text, description, and structured_data
     - _Requirements: 11.1, 11.2_
 
 - [ ] 11. Implement database monitor background worker

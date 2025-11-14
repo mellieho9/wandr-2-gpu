@@ -4,16 +4,18 @@ Wandr GPU is a lean, GPU-accelerated video processing service built for the Goog
 
 ## Core Workflow
 
-1. Client submits video URL via POST request
+1. Client submits video URL with schema via POST request
 2. Service downloads video and assigns job ID
 3. GPU-accelerated Whisper transcribes audio
 4. GPU-accelerated frame extraction + Google Vision OCR extracts on-screen text
-5. Client polls for status and retrieves results
+5. Gemini AI (via Google ADK) generates structured summary matching schema
+6. Client polls for status and retrieves results
 
 ## Key Features
 
 - **GPU-Accelerated Transcription**: Local Whisper model on NVIDIA L4 (no API costs)
 - **Fast Frame Processing**: Parallel GPU operations for video frame extraction
+- **AI-Powered Summarization**: Gemini AI generates structured data matching custom schemas
 - **Multi-Platform Support**: TikTok and Instagram Reels
 - **Async Job Processing**: Non-blocking API with job status tracking
 - **Scalable Architecture**: Cloud Run with auto-scaling
@@ -53,8 +55,8 @@ Check job processing status
 ```json
 {
   "job_id": "uuid",
-  "status": "transcribing",
-  "progress": { "step": 2, "total": 3 }
+  "status": "summarizing",
+  "progress": { "step": 4, "total": 4 }
 }
 ```
 
@@ -70,7 +72,13 @@ Retrieve processed content (when status is "completed")
   "status": "completed",
   "result": {
     "transcription": "Full audio transcription...",
-    "ocr_text": "Extracted on-screen text..."
+    "ocr_text": "Extracted on-screen text...",
+    "description": "Original video description from platform",
+    "structured_data": {
+      "title": "...",
+      "tags": ["..."],
+      "summary": "..."
+    }
   }
 }
 ```
@@ -99,8 +107,9 @@ With NVIDIA L4:
 
 ## Use Cases
 
-- Content creators extracting video transcripts
-- Social media monitoring and analysis
+- Content creators extracting and organizing video content
+- Social media monitoring with structured data extraction
 - Accessibility (adding captions to videos)
-- Content moderation pipelines
-- Video search and indexing
+- Content moderation pipelines with AI-powered categorization
+- Video search and indexing with custom metadata schemas
+- Automated knowledge base creation from video content

@@ -33,6 +33,10 @@
 
 - `google-cloud-vision` - Google Vision API for text detection
 
+### AI/LLM
+
+- `google-adk` - Google Agent Development Kit for Gemini-powered summarization
+
 ### Web & Utilities
 
 - `Flask` - Web framework
@@ -60,6 +64,10 @@ WHISPER_MODEL=base  # Options: tiny, base, small, medium, large
 
 # Google Cloud
 GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+GOOGLE_CLOUD_PROJECT=your-project-id
+
+# Gemini AI
+GEMINI_API_KEY=your-gemini-api-key
 
 # Redis (optional, for production)
 REDIS_HOST=
@@ -153,6 +161,20 @@ curl http://localhost:8080/status/{job_id}
 # Get result
 curl http://localhost:8080/result/{job_id}
 ```
+
+## Processing Pipeline
+
+The video processing pipeline consists of 4 main steps:
+
+1. **Download** - Download video from TikTok/Instagram using yt-dlp
+2. **Transcribe** - GPU-accelerated audio transcription using faster-whisper
+3. **OCR** - Extract text from video frames using Google Vision API
+4. **Summarize** - Generate structured data using Gemini AI via Google ADK
+
+Each step updates job status and progress tracking:
+- `downloading` → `transcribing` → `extracting_text` → `summarizing` → `completed`
+
+The pipeline is implemented in `services/processing_pipeline.py` and orchestrates all services.
 
 ## GPU Optimization
 
